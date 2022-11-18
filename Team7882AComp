@@ -36,6 +36,7 @@ wait(30, MSEC)
 #Motor things
 Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
 Conveyor = MotorGroup(Vacuum, MiddleConveyor, TopConveyor)
+Conveyor = MotorGroup(Vacuum, MiddleConveyor, TopConveyor)
 
 #Print port setings so that team can seamlessly know where each motor is connected
 brain.screen.print("Left Wheels: 1")
@@ -86,88 +87,6 @@ def printing(num):
     controller_1.screen.set_cursor(1,16)
     controller_1.screen.print(num)
 
-#Start of Functions for Autonomous
-def MoveForward(timeF, WheelSpeed = 12, inp = False):
-    Left.spin(FORWARD, WheelSpeed, VOLT)
-    Right.spin(FORWARD, WheelSpeed, VOLT)
-
-    if inp == True:
-        Vacuum.spin(FORWARD, WheelSpeed, VOLT)
-    
-    wait(timeF, SECONDS)
-
-    if inp == True:
-        Vacuum.stop()
-
-    Left.stop()
-    Right.stop()
-
-
-def MoveBack(timeB, WheelSpeed = 12):
-    Left.spin(REVERSE, WheelSpeed , VOLT)
-    Right.spin(REVERSE, WheelSpeed, VOLT)
-    wait(timeB, SECONDS)
-    Left.stop()
-    Right.stop()
-
-def TurnLeft(timeL, WheelSpeed = 12):
-    Left.spin(REVERSE, WheelSpeed, VOLT)
-    Right.spin(FORWARD, WheelSpeed, VOLT)
-    wait(timeL, SECONDS)
-    Left.stop()
-    Right.stop()
-
-def TurnRight(timeR, WheelSpeed = 12):
-    Left.spin(FORWARD, WheelSpeed, VOLT)
-    Right.spin(REVERSE, WheelSpeed, VOLT)
-    wait(timeR, SECONDS)
-    Left.stop()
-    Right.stop()
-
-def VacuumSpin(timeV, forr = FORWARD, VacuumSpeed = 12):
-    Conveyor.spin(forr, VacuumSpeed, VOLT)
-    wait(timeV, SECONDS)
-    Conveyor.stop()
-
-def FlywheelSpin(timeG, GS = 12):
-    Flywheel.spin(FORWARD, GS, VOLT)
-    wait(timeG, SECONDS)
-    Flywheel.stop()
-
-def ShootDisk(timeD, AllSpeed = 12):
-    Conveyor.spin(FORWARD, AllSpeed, VOLT)
-    Flywheel.spin(FORWARD, AllSpeed, VOLT)
-    wait(timeD, SECONDS)
-    Conveyor.stop()
-    Flywheel.stop()
-
-def OpticalChecker():
-    if optical.color() == Color.BLUE:
-        Vacuum.spin(FORWARD, 5, VOLT)
-
-    if optical.color() == Color.RED:
-        wait(.5, SECONDS)
-        Vacuum.stop()
-
-def StringStart():
-    StringMotor.spin(FORWARD)
-
-def StringEnd():
-    StringMotor.stop()
-
-def RotateForward(sec, motors):
-    for motor in motors:
-        motor.spin(FORWARD)
-    wait(sec, SECONDS)
-    for motor in motors:
-        motor.stop()
-
-def RotateReverse(sec, motors):
-    for motor in motors:
-        motor.spin(REVERSE)
-    wait(sec, SECONDS)
-    for motor in motors:
-        motor.stop()
 
 
 def pre_autonomous():
@@ -269,7 +188,7 @@ def pre_autonomous():
     controller_1.buttonDown.released(ButtonDownReleased)
     controller_1.buttonUp.pressed(ButtonUpPressed)
     controller_1.buttonUp.released(ButtonUpReleased)
-    # controller_1.buttonX.released(autonomous)
+    controller_1.buttonX.released(autonomous)
 
     # add 15ms delay to make sure events are registered correctly.
     wait(15, MSEC)
@@ -312,7 +231,7 @@ def autonomous():
     MoveBack([seconds], [volts]) 
     TurnLeft([seconds], [volts])
     TurnRight([seconds], [volts])
-    VacuumSpin([seconds], [direction], [volts])
+    VacuumSpin([seconds], [volts], [direction])
     FlywheelSpin([seconds], [volts])
     OpticalChecker()
     StringStart()
@@ -330,45 +249,88 @@ def autonomous():
         RightFlywheel.spin(FORWARD)
         LeftFlywheel.spin(FORWARD)
         #270 degree rotation
-        MoveForward(.3,6)
-        VacuumSpin(.4,9)
-        wait(.1,SECONDS)
+        MoveForward(.3,7)
+        VacuumSpin(.5,9)
+        wait(.3,SECONDS)
         # Rolling Motor
-        MoveBack(.4, 6)
-        wait(.2,SECONDS)
+        MoveBack(.5, 7)
+        wait(.3,SECONDS)
         # Move Back Slightly
-        TurnLeft(.75,12)
-        wait(.2,SECONDS)
+        TurnLeft(2,6)
+        wait(.3,SECONDS)
         # Turn towards the stack of 3 rings
-        MoveForward(.7)
-        wait(.2,SECONDS)
-        Left.spin_for(REVERSE, 345, DEGREES, wait=False)
-        Right.spin_for(FORWARD, 345, DEGREES)
+        MoveForward(2.2, 6)
+        wait(.3,SECONDS)
+        TurnLeft(1.3,6)
         # To high goal
-        wait(.1,SECONDS)
-        MoveForward(.2,10)
-        ShootDisk(1, 11)
-        ShootDisk(2, 12)
+        wait(.3,SECONDS)
+        MoveForward(.44,6)
+        ShootDisk(4, 12)
         # Shoot
-        wait(.1,SECONDS)
+        wait(.3,SECONDS)
         RightFlywheel.spin(FORWARD)
         LeftFlywheel.spin(FORWARD)
-        TurnRight(.45,10)
+        TurnRight(.85,7)
+        wait(.3, SECONDS)
         # Back to stack of 3 disks
-        MoveForward(.5, 11, True)
-        wait(.2,SECONDS)
-        # Collect the 2 rings
-        MoveForward(.3,10, True)
-        VacuumSpin(1)
-        VacuumSpin(.5, REVERSE)
-        MoveForward(.3,10, True)
-        VacuumSpin(1)
-        # Turn Towards Goal
-        Left.spin_for(REVERSE, 345, DEGREES, wait=False)
-        Right.spin_for(FORWARD, 345, DEGREES)
-        # 135 degree rotation 
-        wait(.1,SECONDS)
-        ShootDisk(3)
+        MoveForward(.6, 6, True)
+        wait(.3,SECONDS)
+        # # Collect the 2 rings
+        # MoveForward(.3,10, True)
+        # VacuumSpin(1)
+        # VacuumSpin(.5, 12, REVERSE)
+        # MoveForward(.3,10, True)
+        # VacuumSpin(1)
+        # # Turn Towards Goal
+        # Left.spin_for(REVERSE, 365, DEGREES, wait=False)
+        # Right.spin_for(FORWARD, 365, DEGREES)
+        # # 135 degree rotation 
+        # wait(.3,SECONDS)
+        # ShootDisk(3)
+
+    # When the robot needs a little help
+    def RoboNotWorkFromRoller():
+        RightFlywheel.spin(FORWARD)
+        LeftFlywheel.spin(FORWARD)
+        #270 degree rotation
+        MoveForward(.3,7)
+        VacuumSpin(.7,9)
+        wait(.3,SECONDS)
+        # Rolling Motor
+        MoveBack(.5, 7)
+        wait(.3,SECONDS)
+        # Move Back Slightly
+        TurnLeft(2,6)
+        wait(.3,SECONDS)
+        # Turn towards the stack of 3 rings
+        MoveForward(2.2, 6)
+        wait(.3,SECONDS)
+        TurnLeft(1.25,6)
+        # To high goal
+        wait(.3,SECONDS)
+        MoveForward(.44,6)
+        ShootDisk(4, 12)
+        # Shoot
+        wait(.3,SECONDS)
+        RightFlywheel.spin(FORWARD)
+        LeftFlywheel.spin(FORWARD)
+        TurnRight(.85,7)
+        wait(.3, SECONDS)
+        # Back to stack of 3 disks
+        MoveForward(.6, 6, True)
+        wait(.3,SECONDS)
+        # # Collect the 2 rings
+        # MoveForward(.3,10, True)
+        # VacuumSpin(1)
+        # VacuumSpin(.5, 12, REVERSE)
+        # MoveForward(.3,10, True)
+        # VacuumSpin(1)
+        # # Turn Towards Goal
+        # Left.spin_for(REVERSE, 365, DEGREES, wait=False)
+        # Right.spin_for(FORWARD, 365, DEGREES)
+        # # 135 degree rotation 
+        # wait(.3,SECONDS)
+        # ShootDisk(3)
 
     # This autonomous is for when we are on the side that doesnt allow us to be at the roller (2 preloads)
 
@@ -404,10 +366,101 @@ def autonomous():
         # MoveForward(2,6,True)
         # # Go to the roller and spin it
 
+    #Start of Functions for Autonomous
+    def MoveForward(timeF, WheelSpeed = 12, inp = False):
+        Left.spin(FORWARD, WheelSpeed, VOLT)
+        Right.spin(FORWARD, WheelSpeed, VOLT)
+
+        if inp == True:
+            Vacuum.spin(FORWARD, WheelSpeed, VOLT)
+    
+        wait(timeF, SECONDS)
+
+        if inp == True:
+            Vacuum.stop()
+
+        Left.stop()
+        Right.stop()
+
+
+    def MoveBack(timeB, WheelSpeed = 12):
+        Left.spin(REVERSE, WheelSpeed , VOLT)
+        Right.spin(REVERSE, WheelSpeed, VOLT)
+        wait(timeB, SECONDS)
+        Left.stop()
+        Right.stop()
+
+    def TurnLeft(timeL, WheelSpeed = 12):
+        Left.spin(REVERSE, WheelSpeed, VOLT)
+        Right.spin(FORWARD, WheelSpeed, VOLT)
+        wait(timeL, SECONDS)
+        Left.stop()
+        Right.stop()
+
+    def TurnRight(timeR, WheelSpeed = 12):
+        Left.spin(FORWARD, WheelSpeed, VOLT)
+        Right.spin(REVERSE, WheelSpeed, VOLT)
+        wait(timeR, SECONDS)
+        Left.stop()
+        Right.stop()
+
+    def ConveyorSpin(timeV, VacuumSpeed = 12, forr = FORWARD):
+        Conveyor.spin(forr, VacuumSpeed, VOLT)
+        wait(timeV, SECONDS)
+        Conveyor.stop()
+
+    def VacuumSpin(timeV, VacuumSpeed = 12, forr = FORWARD):
+        Vacuum.spin(forr, VacuumSpeed, VOLT)
+        wait(timeV, SECONDS)
+        Vacuum.stop()
+
+    def FlywheelSpin(timeG, GS = 12):
+        Flywheel.spin(FORWARD, GS, VOLT)
+        wait(timeG, SECONDS)
+        Flywheel.stop()
+
+    def ShootDisk(timeD, AllSpeed = 12):
+        Conveyor.spin(FORWARD, AllSpeed, VOLT)
+        Flywheel.spin(FORWARD, AllSpeed, VOLT)
+        wait(timeD, SECONDS)
+        Conveyor.stop()
+        Flywheel.stop()
+
+    def OpticalChecker():
+        if optical.color() == Color.BLUE:
+            Vacuum.spin(FORWARD, 5, VOLT)
+
+        if optical.color() == Color.RED:
+            wait(.5, SECONDS)
+            Vacuum.stop()
+
+    def StringStart():
+        StringMotor.spin(FORWARD)
+
+    def StringEnd():
+        StringMotor.stop()
+
+    def RotateForward(sec, motors):
+        for motor in motors:
+            motor.spin(FORWARD)
+        wait(sec, SECONDS)
+        for motor in motors:
+            motor.stop()
+
+    def RotateReverse(sec, motors):
+        for motor in motors:
+            motor.spin(REVERSE)
+        wait(sec, SECONDS)
+        for motor in motors:
+            motor.stop()
+
+    # End of autonomous functions
+
     # Only have ONE of these uncommented
 
-    # FromRoller()
-    NotRoller()
+    FromRoller()
+    # RoboNotWorkFromRoller()
+    # NotRoller()
 
 def user_control():
     pass
@@ -415,4 +468,3 @@ def user_control():
 #create competition instance
 comp = Competition(user_control, autonomous)
 pre_autonomous()
-
