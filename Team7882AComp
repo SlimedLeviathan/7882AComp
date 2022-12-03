@@ -7,16 +7,16 @@ brain=Brain()
 
 # Robot configuration code
 controller_1 = Controller(PRIMARY)
-FrontLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, False)
+FrontLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)
 FrontRight = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
 optical = Optical(Ports.PORT11)
-Conveyor = Motor(Ports.PORT5, GearSetting.RATIO_36_1, True)
-StringMotor = Motor(Ports.PORT15, GearSetting.RATIO_6_1, False)
+ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_18_1, True)
+StringMotor = Motor(Ports.PORT15, GearSetting.RATIO_36_1, True)
 LeftFlywheel = Motor(Ports.PORT6, GearSetting.RATIO_18_1, False)
 RightFlywheel = Motor(Ports.PORT7, GearSetting.RATIO_18_1, True)
 string = DigitalOut(brain.three_wire_port.a)
 BackLeft = Motor(Ports.PORT3, GearSetting.RATIO_18_1, True)
-BackRight = Motor(Ports.PORT4, GearSetting.RATIO_18_1, True)
+BackRight = Motor(Ports.PORT8, GearSetting.RATIO_18_1, False)
 
 
 # wait for rotation sensor to fully initialize
@@ -37,6 +37,7 @@ wait(30, MSEC)
 Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
 Left = MotorGroup(FrontLeft, BackLeft)
 Right = MotorGroup(FrontRight, BackRight)
+Conveyor = MotorGroup(ConveyorMotor, StringMotor)
 
 #Print port setings so that team can seamlessly know where each motor is connected
 brain.screen.print("Front Left Wheel: 1 Back: 3")
@@ -56,11 +57,11 @@ brain.screen.next_row()
 brain.screen.print("The string motors: 15")
 
 #Set velocities
-Left.set_velocity(100,PERCENT)
-Right.set_velocity(100,PERCENT)
+Left.set_velocity(85,PERCENT)
+Right.set_velocity(85,PERCENT)
 Flywheel.set_velocity(100,PERCENT)
 Conveyor.set_velocity(100,PERCENT)
-StringMotor.set_velocity(25,PERCENT)
+StringMotor.set_velocity(100,PERCENT)
 Conveyor.set_max_torque(100,PERCENT)
 
 #Variables
@@ -422,16 +423,27 @@ def autonomous():
         Flywheel.stop()
 
     def OpticalChecker():
-        while True:
-            if optical.color == Color.RED:
-                Conveyor.spin(FORWARD)
-            if optical.color() == Color.BLUE:
-                Conveyor.spin(REVERSE)
+        optical.set_light(LedStateType.ON)
+        optical.set_light_power(25, PERCENT)
 
-    def StringStart():
+        colorFound = False
+        while colorFound == False:
+            if optical.color() == Color.RED:
+                colorFound = True
+                ogColor = Color.BLUE
+                opColor = Color.RED
+                controller_1.screen.print("Red")
+    
+            elif optical.color() == Color.BLUE:
+                colorFound = True
+                ogColor = Color.RED
+                opColor = Color.BLUE
+                controller_1.screen.print("Blue")
+
+
+    def String():
         StringMotor.spin(FORWARD)
-
-    def StringEnd():
+        wait(.5,SECONDS)
         StringMotor.stop()
 
     def RotateForward(sec, motors):
@@ -466,3 +478,4 @@ def user_control():
 #create competition instance
 comp = Competition(user_control, autonomous)
 pre_autonomous()
+
