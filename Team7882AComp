@@ -9,8 +9,8 @@ brain=Brain()
 controller_1 = Controller(PRIMARY)
 FrontLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)
 FrontRight = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
-optical = Optical(Ports.PORT11)
-ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_18_1, True)
+optical = Optical(Ports.PORT10)
+ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_36_1, True)
 StringMotor = Motor(Ports.PORT15, GearSetting.RATIO_36_1, True)
 LeftFlywheel = Motor(Ports.PORT6, GearSetting.RATIO_18_1, False)
 RightFlywheel = Motor(Ports.PORT7, GearSetting.RATIO_18_1, True)
@@ -26,12 +26,24 @@ wait(30, MSEC)
 # ------------------------------------------
 # 
 # 	Project: Competition
-#	Authors: Steven Canton and Karter Crites
+#	Authors: Steven Canton and Karter Crites (Bettered by Katherine Andrews :) )
 #	Created: Sep 30, 2022
 # 
 # ------------------------------------------
 
 # Begin project code
+
+# Port 1 FrontLeft, Green, Reverse
+# Port 2 FrontRight, Green, Normal
+# Port 3 BackLeft, Green, Reverse
+# Port 8 BackRight, Green, Normal
+# Port 5 ConveyorMotor, Red, Reverse
+# Port 6 LeftFlywheel, Green, Normal
+# Port 7 RightFlywheel, Green, Reverse
+# Port 15 StringMotor, Red, Reverse
+# Port 10 optical
+
+# Port A string
 
 #Motor things
 Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
@@ -84,8 +96,6 @@ def printing(num):
     controller_1.screen.set_cursor(1,16)
     controller_1.screen.print(num)
 
-
-
 def pre_autonomous():
     #Functions For Controller Inputs:
     #Robot Movement (Axis 2 and 3)
@@ -110,20 +120,16 @@ def pre_autonomous():
     #Changing the Speed of the Flywheel (L2 and R2) and making the flwheel go as well
     def LeftB2():
         global FlywheelSpeed
-        if FlywheelSpeed < 12.0:
-            FlywheelSpeed += 1.0
+        FlywheelSpeed = 12
         Flywheel.spin(FORWARD, FlywheelSpeed, VOLT)
-        printing(FlywheelSpeed)
 
     def LeftB2R():
         Flywheel.stop()
 
     def RightB2():
         global FlywheelSpeed
-        if FlywheelSpeed > 0:
-            FlywheelSpeed -= 1.0
+        FlywheelSpeed = 9.5
         Flywheel.spin(FORWARD, FlywheelSpeed, VOLT)
-        printing(FlywheelSpeed)
 
     def RightB2R():
         Flywheel.stop()
@@ -156,10 +162,15 @@ def pre_autonomous():
         StringMotor.stop()
 
     def ButtonUpPressed():
-        StringMotor.spin(FORWARD)
+        # StringMotor.spin(FORWARD)
+        string.set(True)
+        wait(.2,SECONDS)
+        string.set(False)
 
     def ButtonUpReleased():
-        StringMotor.stop()
+        pass
+    #     StringMotor.stop()
+        
     # system event handlers
     controller_1.axis3.changed(Axis3Changed)
     controller_1.axis2.changed(Axis2Changed)
@@ -179,12 +190,26 @@ def pre_autonomous():
     controller_1.buttonDown.released(ButtonDownReleased)
     controller_1.buttonUp.pressed(ButtonUpPressed)
     controller_1.buttonUp.released(ButtonUpReleased)
-    controller_1.buttonX.released(autonomous)
+    # controller_1.button
+    # controller_1.buttonX.released(autonomous)
 
     # add 15ms delay to make sure events are registered correctly.
     wait(15, MSEC)
 
 def autonomous():
+    # Left.spin(FORWARD)
+    # Right.spin(FORWARD)
+    # wait(2)
+    # left.stop
+    # right.stop
+
+    # Left.spin(FORWARD)
+    # Conveyor.spin(REVERSE)
+    # wait(.5, SECONDS)
+    # Conveyor.stop()
+
+    
+
     '''
 
     THIS IS A MANUAL, PLEASE READ BEFORE PROGRAMMING AUTONOMOUS
@@ -236,26 +261,28 @@ def autonomous():
 
     # This autonomous is set so its able to get to the roller from the get go (2 preloads)
     # Mostly Finished!
+    
     def FromRoller():
-        # RightFlywheel.spin(FORWARD)
-        # LeftFlywheel.spin(FORWARD)
+        RightFlywheel.spin(FORWARD)
+        LeftFlywheel.spin(FORWARD)
         #270 degree rotation
-        MoveForward(.39, 12, True)
+        MoveForward(.39, 12)
         wait(.3,SECONDS)
+        OpticalChecker()
         # Rolling Motor
-        MoveBack(.6, 7)
+        MoveBack(.3, 7)
         wait(.3,SECONDS)
         # Move Back Slightly
-        TurnLeft(2.4,6)
+        TurnLeft(.9,6)
         wait(.3,SECONDS)
         # Turn towards the stack of 3 rings
-        MoveForward(2.2, 6)
+        MoveForward(1.5, 6)
         wait(.3,SECONDS)
-        TurnLeft(1.2,6)
+        TurnLeft(.6,7)
         # To high goal
         wait(.3,SECONDS)
-        MoveForward(.5,6)
-        # ShootDisk(4, 12)
+        MoveForward(.3,6)
+        ShootDisk(4)
         # # Shoot
         # wait(.3,SECONDS)
         # RightFlywheel.spin(FORWARD)
@@ -367,6 +394,16 @@ def autonomous():
         wait(.3,SECONDS)
         ConveyorSpin(.25,12,REVERSE)
 
+    def skills():
+        # OpticalChecker()
+        MoveForward(1,6)
+        TurnRight(.5,6)
+        ShootDisk(3)
+        TurnLeft(.3,6)
+        string.set(True)
+        wait(.2,SECONDS)
+        string.set(False)
+
     #Start of Functions for Autonomous
     def MoveForward(timeF, WheelSpeed = 12, inp = False):
         Left.spin(FORWARD, WheelSpeed, VOLT)
@@ -426,20 +463,36 @@ def autonomous():
         optical.set_light(LedStateType.ON)
         optical.set_light_power(25, PERCENT)
 
+        Left.spin(FORWARD)
+        Right.spin(FORWARD)
+
         colorFound = False
         while colorFound == False:
             if optical.color() == Color.RED:
                 colorFound = True
-                ogColor = Color.BLUE
+                startColor = Color.BLUE
                 opColor = Color.RED
                 controller_1.screen.print("Red")
     
             elif optical.color() == Color.BLUE:
                 colorFound = True
-                ogColor = Color.RED
+                startColor = Color.RED
                 opColor = Color.BLUE
                 controller_1.screen.print("Blue")
 
+        Conveyor.spin(REVERSE)
+        wait(.2,SECONDS)
+
+        done = False
+        while done == False:
+            if optical.color() == startColor:
+                Conveyor.spin(REVERSE, 12, VOLT)
+            elif optical.color() == opColor:
+                wait(.1, SECONDS)
+                done = True
+                Conveyor.stop()
+                Left.stop()
+                Right.stop()
 
     def String():
         StringMotor.spin(FORWARD)
@@ -466,16 +519,20 @@ def autonomous():
 
     wait(.3,SECONDS)
 
-    # FromRoller()
+    FromRoller()
     # RoboNotWorkFromRoller()
     # NotRoller()
     # NotRollerTowardRoller()
-    OpticalChecker()
+    # OpticalChecker()
+
+    # MoveBack(.5, 6)
+    # wait(.2, SECONDS)
+    # MoveForward(.5, 6)
 
 def user_control():
     pass
 
+
 #create competition instance
 comp = Competition(user_control, autonomous)
 pre_autonomous()
-
