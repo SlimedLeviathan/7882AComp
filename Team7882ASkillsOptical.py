@@ -234,77 +234,25 @@ def autonomous():
     Note that autonomous is only 15 seconds, so be mindfull of how much time you spend using the functions
     '''
 
-    def FromRoller():
-        RightFlywheel.spin(FORWARD)
-        LeftFlywheel.spin(FORWARD)
-        #270 degree rotation
-        MoveForward(.39, 12)
-        wait(.3,SECONDS)
-        OpticalChecker()
-        # Rolling Motor
-        MoveBack(.3, 7)
-        wait(.3,SECONDS)
-        # Move Back Slightly
-        TurnLeft(.9,6)
-        wait(.3,SECONDS)
-        # Turn towards the stack of 3 rings
-        MoveForward(1.5, 6)
-        wait(.3,SECONDS)
-        TurnLeft(.6,7)
-        # To high goal
-        wait(.3,SECONDS)
-        MoveForward(.3,6)
-        ShootDisk(4)
-        TurnLeft(.6,7)
-        wait(.3,SECONDS)
-        MoveForward(1,8)
-        
-        
-        
-        # UNCOMMENT ONLY THIS WHEN CARSON SAYS OR IF HE SAYS YEAH
-        # String()
-
-
-
-        # # Shoot
-        # wait(.3,SECONDS)
-        # RightFlywheel.spin(FORWARD)
-        # LeftFlywheel.spin(FORWARD)
-        # TurnRight(.85,7)
-        # wait(.3, SECONDS)
-        # # Back to stack of 3 disks
-        # MoveForward(.6, 6, True)
-        # wait(.3,SECONDS)
-        # # Collect the 2 rings
-        # MoveForward(.3,10, True)
-        # ConveyorSpin(1)
-        # ConveyorSpin(.5, 12, REVERSE)
-        # MoveForward(.3,10, True)
-        # ConveyorSpin(1)
-        # # Turn Towards Goal
-        # Left.spin_for(REVERSE, 365, DEGREES, wait=False)
-        # Right.spin_for(FORWARD, 365, DEGREES)
-        # # 135 degree rotation 
-        # wait(.3,SECONDS)
-        # ShootDisk(3)
-
     def skills(): # Not Tested lol
+
+        # First Side
         SkillsOpticalChecker()
-        MoveBack(.2, 6)
+        MoveForward(.2, 6)
         wait(.2, SECONDS)
-        TurnLeft(1.4, 6)
+        TurnLeft(.4, 6)
         wait(.2,SECONDS)
         MoveForward(.85, 6, True)
         ConveyorSpin(2)
         wait(.2,SECONDS)
-        TurnLeft(.4, 6)
+        TurnRight(.9, 6)
         wait(.2,SECONDS)
-        MoveForward(.55, 6)
+        MoveBack(.55, 6)
         wait(.2, SECONDS)
         SkillsOpticalChecker()
-        MoveBack(.3, 6)
+        MoveForward(.3, 6)
         wait(.2,SECONDS)
-        TurnRight(.7, 6)
+        TurnRight(.4, 6)
         wait(.2,SECONDS)
         MoveForward(1, 6)
         wait(.2,SECONDS)
@@ -324,23 +272,25 @@ def autonomous():
         wait(.2,SECONDS)
         MoveForward(1, 6)
         wait(.2,SECONDS)
-        TurnRight(.3, 6)
+        TurnRight(.9, 6)
         wait(.2,SECONDS)
-        MoveForward(.3, 6)
-        SkillsOpticalChecker()
         MoveBack(.3, 6)
+
+        # Start of secnd side
+        SkillsOpticalChecker()
+        MoveForward(.3, 6)
         wait(.2,SECONDS)
-        TurnRight(1, 6)
+        TurnLeft(.4, 6)
         wait(.2,SECONDS)
         MoveForward(.3, 6, True)
         wait(.2,SECONDS)
-        TurnLeft(.5, 6)
+        TurnRight(.9, 6)
         wait(.2,SECONDS)
-        MoveForward(.3, 6)
+        MoveBack(.4, 6)
         SkillsOpticalChecker()
-        MoveBack(.3, 6)
+        MoveForward(.3, 6)
         wait(.2,SECONDS)
-        TurnRight(1, 6)
+        TurnLeft(1, 6)
         wait(.2,SECONDS)
         MoveForward(1, 6, True)
         TurnLeft(.5, 6)
@@ -420,8 +370,8 @@ def autonomous():
         notwanted = Color.BLUE 
         wanted = Color.RED
 
-        Left.spin(FORWARD,6,VOLT)
-        Right.spin(FORWARD,6,VOLT)
+        Left.spin(REVERSE,6,VOLT)
+        Right.spin(REVERSE,6,VOLT)
 
         done = False
         while done == False:
@@ -444,8 +394,8 @@ def autonomous():
 
         done = False
         while done == False:
-            Left.spin(FORWARD, 6, VOLT)
-            Right.spin(FORWARD, 6, VOLT)
+            Left.spin(REVERSE, 6, VOLT)
+            Right.spin(REVERSE, 6, VOLT)
             if optical.color() == notwanted:
                 Conveyor.spin(REVERSE)
             
@@ -488,4 +438,3 @@ def user_control():
 #create competition instance
 comp = Competition(user_control, autonomous)
 pre_autonomous()
-
