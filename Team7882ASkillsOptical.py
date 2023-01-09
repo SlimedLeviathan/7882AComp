@@ -33,7 +33,17 @@ wait(30, MSEC)
 
 # Begin project code
 
-#Motor things
+# Port 1 FrontLeft, Green, Reverse
+# Port 2 FrontRight, Green, Normal
+# Port 3 BackLeft, Green, Reverse
+# Port 8 BackRight, Green, Normal
+# Port 5 ConveyorMotor, Red, Reverse
+# Port 6 LeftFlywheel, Green, Normal
+# Port 7 RightFlywheel, Green, Reverse
+# Port 15 StringMotor, Red, Reverse
+# Port 10 optical
+
+# Motor things
 Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
 Left = MotorGroup(FrontLeft, BackLeft)
 Right = MotorGroup(FrontRight, BackRight)
@@ -245,7 +255,7 @@ def autonomous():
         MoveForward(.85, 6, True)
         ConveyorSpin(2)
         wait(.2,SECONDS)
-        TurnRight(.9, 6)
+        TurnRight(1.8, 6)
         wait(.2,SECONDS)
         MoveBack(.55, 6)
         wait(.2, SECONDS)
@@ -258,55 +268,55 @@ def autonomous():
         wait(.2,SECONDS)
         TurnRight(.1,6)
         ShootDisk(3)
-        TurnRight(.5, 6)
-        wait(.2,SECONDS)
-        MoveForward(.5, 6, True)
-        wait(2,SECONDS)
-        TurnLeft(.3, 6)
-        wait(.2,SECONDS)
-        MoveForward(1, 6, True)
-        wait(.2,SECONDS)
-        TurnLeft(.5, 6)
-        ShootDisk(3)
-        TurnRight(.5, 6)
-        wait(.2,SECONDS)
-        MoveForward(1, 6)
-        wait(.2,SECONDS)
-        TurnRight(.9, 6)
-        wait(.2,SECONDS)
-        MoveBack(.3, 6)
+        # TurnRight(.5, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(.5, 6, True)
+        # wait(2,SECONDS)
+        # TurnLeft(.3, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(1, 6, True)
+        # wait(.2,SECONDS)
+        # TurnLeft(.5, 6)
+        # ShootDisk(3)
+        # TurnRight(.5, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(1, 6)
+        # wait(.2,SECONDS)
+        # TurnRight(.9, 6)
+        # wait(.2,SECONDS)
+        # MoveBack(.3, 6)
 
-        # Start of secnd side
-        SkillsOpticalChecker()
-        MoveForward(.3, 6)
-        wait(.2,SECONDS)
-        TurnLeft(.4, 6)
-        wait(.2,SECONDS)
-        MoveForward(.3, 6, True)
-        wait(.2,SECONDS)
-        TurnRight(.9, 6)
-        wait(.2,SECONDS)
-        MoveBack(.4, 6)
-        SkillsOpticalChecker()
-        MoveForward(.3, 6)
-        wait(.2,SECONDS)
-        TurnLeft(1, 6)
-        wait(.2,SECONDS)
-        MoveForward(1, 6, True)
-        TurnLeft(.5, 6)
-        wait(.2,SECONDS)
-        ShootDisk(3)
-        TurnRight(.5, 6)
-        wait(.2,SECONDS)
-        MoveForward(.5, 6, True)
-        wait(.2,SECONDS)
-        TurnRight(.6, 6)
-        ShootDisk(1)
-        TurnLeft(.4, 6)
-        wait(.2,SECONDS)
-        string.set(True)
-        wait(.2, SECONDS)
-        string.set(False)
+        # # Start of secnd side
+        # SkillsOpticalChecker()
+        # MoveForward(.3, 6)
+        # wait(.2,SECONDS)
+        # TurnLeft(.4, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(.3, 6, True)
+        # wait(.2,SECONDS)
+        # TurnRight(.9, 6)
+        # wait(.2,SECONDS)
+        # MoveBack(.4, 6)
+        # SkillsOpticalChecker()
+        # MoveForward(.3, 6)
+        # wait(.2,SECONDS)
+        # TurnLeft(1, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(1, 6, True)
+        # TurnLeft(.5, 6)
+        # wait(.2,SECONDS)
+        # ShootDisk(3)
+        # TurnRight(.5, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(.5, 6, True)
+        # wait(.2,SECONDS)
+        # TurnRight(.6, 6)
+        # ShootDisk(1)
+        # TurnLeft(.4, 6)
+        # wait(.2,SECONDS)
+        # string.set(True)
+        # wait(.2, SECONDS)
+        # string.set(False)
 
     #Start of Functions for Autonomous
     def MoveForward(timeF, WheelSpeed = 12, inp = False):
@@ -400,6 +410,7 @@ def autonomous():
                 Conveyor.spin(REVERSE)
             
             elif optical.color() == wanted:
+                wait(.2, SECONDS)
                 Conveyor.stop()
                 done = True
                 optical.set_light(LedStateType.OFF)
@@ -429,8 +440,7 @@ def autonomous():
 
     wait(.3,SECONDS)
 
-    # skills()zsw2
-    FromRoller()
+    skills()
 
 def user_control():
     pass
@@ -438,3 +448,4 @@ def user_control():
 #create competition instance
 comp = Competition(user_control, autonomous)
 pre_autonomous()
+
