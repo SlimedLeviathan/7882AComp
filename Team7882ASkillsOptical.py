@@ -43,157 +43,6 @@ wait(30, MSEC)
 # Port 15 StringMotor, Red, Reverse
 # Port 10 optical
 
-# Motor things
-Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
-Left = MotorGroup(FrontLeft, BackLeft)
-Right = MotorGroup(FrontRight, BackRight)
-Conveyor = MotorGroup(ConveyorMotor, StringMotor)
-
-#Print port setings so that team can seamlessly know where each motor is connected
-brain.screen.print("Front Left Wheel: 1 Back: 3")
-brain.screen.next_row()
-brain.screen.print("Front Right Wheel: 2 Back: 4")
-brain.screen.next_row()
-brain.screen.print("Conveyor System: 5")
-brain.screen.next_row()
-brain.screen.print("Left Flywheel: 6")
-brain.screen.next_row()
-brain.screen.print("Right Flywheel: 7")
-brain.screen.next_row()
-brain.screen.print("Optical: 11")
-brain.screen.next_row()
-brain.screen.print("The string launchers: A")
-brain.screen.next_row()
-brain.screen.print("The string motors: 15")
-
-#Set velocities
-Left.set_velocity(85,PERCENT)
-Right.set_velocity(85,PERCENT)
-Flywheel.set_velocity(100,PERCENT)
-Conveyor.set_velocity(100,PERCENT)
-StringMotor.set_velocity(100,PERCENT)
-Conveyor.set_max_torque(100,PERCENT)
-
-#Variables
-FlywheelSpeed = 12.0
-intakeIn = False
-intakeOut = False
-
-#Setting motors to their respective stopping positions
-Left.set_stopping(BRAKE)
-Right.set_stopping(BRAKE)
-Flywheel.set_stopping(BRAKE)
-Conveyor.set_stopping(BRAKE)
-StringMotor.set_stopping(BRAKE)
-
-#Function for controller printing
-def printing(num):
-    controller_1.screen.clear_screen()
-    controller_1.screen.set_cursor(1,1)
-    controller_1.screen.print("Flywheel speed: ")
-    controller_1.screen.set_cursor(1,16)
-    controller_1.screen.print(num)
-
-
-
-def pre_autonomous():
-    #Functions For Controller Inputs:
-    #Robot Movement (Axis 2 and 3)
-    def Axis3Changed():
-        Left.spin(FORWARD, controller_1.axis3.position(), VOLT)
-
-    def Axis2Changed():
-        Right.spin(FORWARD, controller_1.axis2.position(), VOLT)
-
-    #Conveyor (Button B)
-    def ButtonBPressed():
-        Conveyor.spin(FORWARD)
-    def ButtonBReleased():
-        Conveyor.stop()
-    #Flywheel (Button A)
-    def ButtonAPressed():
-        Flywheel.spin(FORWARD, FlywheelSpeed, VOLT)
-
-    def ButtonAReleased():
-        Flywheel.stop()
-
-    #Changing the Speed of the Flywheel (L2 and R2) and making the flwheel go as well
-    def LeftB2():
-        global FlywheelSpeed
-        if FlywheelSpeed < 12.0:
-            FlywheelSpeed += 1.0
-        Flywheel.spin(FORWARD, FlywheelSpeed, VOLT)
-        printing(FlywheelSpeed)
-
-    def LeftB2R():
-        Flywheel.stop()
-
-    def RightB2():
-        global FlywheelSpeed
-        if FlywheelSpeed > 0:
-            FlywheelSpeed -= 1.0
-        Flywheel.spin(FORWARD, FlywheelSpeed, VOLT)
-        printing(FlywheelSpeed)
-
-    def RightB2R():
-        Flywheel.stop()
-
-    #Endgame string launching
-    def LeftB1P():
-        Conveyor.spin(REVERSE)
-
-    def LeftB1R():
-        # if intakeOut == False:
-        #     intakeOut = True
-        # elif intakeOut == True:
-        #     intakeOut = False
-        Conveyor.stop()
-
-    def RightB1P():    
-        Conveyor.spin(FORWARD)
-
-    def RightB1R():
-        # if intakeIn == False:
-        #     intakeIn = True
-        # elif intakeIn == True:
-        #     intakeIn = False
-        Conveyor.stop()
-
-    def ButtonDownPressed():
-        StringMotor.spin(REVERSE)
-
-    def ButtonDownReleased():
-        StringMotor.stop()
-
-    def ButtonUpPressed():
-        StringMotor.spin(FORWARD)
-
-    def ButtonUpReleased():
-        StringMotor.stop()
-    # system event handlers
-    controller_1.axis3.changed(Axis3Changed)
-    controller_1.axis2.changed(Axis2Changed)
-    controller_1.buttonB.pressed(ButtonBPressed)
-    controller_1.buttonA.pressed(ButtonAPressed)
-    controller_1.buttonB.released(ButtonBReleased)
-    controller_1.buttonA.released(ButtonAReleased)
-    controller_1.buttonL2.pressed(LeftB2)
-    controller_1.buttonR2.pressed(RightB2)
-    controller_1.buttonL2.released(LeftB2R)
-    controller_1.buttonR2.released(RightB2R)
-    controller_1.buttonL1.pressed(LeftB1P)
-    controller_1.buttonL1.released(LeftB1R)
-    controller_1.buttonR1.pressed(RightB1P)
-    controller_1.buttonR1.released(RightB1R)
-    controller_1.buttonDown.pressed(ButtonDownPressed)
-    controller_1.buttonDown.released(ButtonDownReleased)
-    controller_1.buttonUp.pressed(ButtonUpPressed)
-    controller_1.buttonUp.released(ButtonUpReleased)
-    controller_1.buttonX.released(autonomous)
-
-    # add 15ms delay to make sure events are registered correctly.
-    wait(15, MSEC)
-
 def autonomous():
     '''
 
@@ -244,138 +93,73 @@ def autonomous():
     Note that autonomous is only 15 seconds, so be mindfull of how much time you spend using the functions
     '''
 
-    def skills2(): # A code that shoots the disks at the middle line
+    def CarsonSkills():
 
-        # First Roller
-        SkillsOpticalChecker()
-        MoveForward(.2, 6)
-        wait(.2, SECONDS)
-        TurnLeft(.4, 6)
-        wait(.2,SECONDS)
-        MoveForward(.8, 6, True)
-
-        # This is where the changes start, we are going to shoot our proeloads before we get to the second roller
-        TurnRight(.4, 6)
-        ConveyorSpin(1, 12, REVERSE)
-        wait(.2,SECONDS)
-        ShootDisk(5,12)
-        wait(.2,SECONDS)
-        TurnRight(1.1, 6)
-        wait(.2,SECONDS)
-        MoveBack(.55, 6)
-        wait(.2, SECONDS)
-
-        # Second Roller
+        # Get the roller and turn right towards the high goa closest to us
         SkillsOpticalChecker()
         MoveForward(.3, 6)
-        wait(.2,SECONDS)
-        # Because we already shotthi can be less of a tur and we can go to the other roller immediately
-        TurnLeft(.4, 6)
-        wait(.2,SECONDS)
-        MoveForward(3, 6,True)
-        wait(.2,SECONDS)
-        #Turn away from roller
-        TurnRight(1.3,6)
-        MoveBack(.3,6)
 
-        # Third Roller (Same as the first)
-        SkillsOpticalChecker()
-        MoveForward(.2, 6)
-        wait(.2, SECONDS)
-        TurnLeft(.4, 6)
-        wait(.2,SECONDS)
-        MoveForward(1.1, 6, True)
-        TurnRight(.4, 6)
-        ConveyorSpin(1, 12, REVERSE)
-        wait(.2,SECONDS)
+        # 90 degree turn to the right towards the high goal
+        TurnRight(.5,6)
+
+        MoveForward(1,6)
+        TurnLeft(.2,6)
+
+        # Shoot disks into high goal
         ShootDisk(5,12)
-        wait(.2,SECONDS)
-        TurnRight(1.1, 6)
-        wait(.2,SECONDS)
-        MoveBack(.55, 6)
-        wait(.2, SECONDS)
 
-        # Fourth Roller
-        SkillsOpticalChecker()
-        MoveForward(.3,12)
-        wait(.2,SECONDS)
-        TurnLeft(1.5,6)
-
-        # This shoots out our endgame and should end our autonomous code
-        String()
-
-    def skills(): # A little Tested
-
-        # First Roller
-        MoveBack(.2,6)
-        SkillsOpticalChecker()
-        MoveForward(.2, 6)
-        wait(.2, SECONDS)
-        TurnLeft(.4, 6)
-        wait(.2,SECONDS)
-        MoveForward(.7, 6, True)
-        wait(.2,SECONDS)
-        ConveyorSpin(.5, 12, FORWARD)
-        wait(.2,SECONDS)
-        TurnRight(1, 6)
-        wait(.2,SECONDS)
-        MoveBack(.9, 6)
-        wait(.2, SECONDS)
-
-        # Second Roller
-        SkillsOpticalChecker()
-        MoveForward(.3, 6)
-        wait(.2,SECONDS)
-        TurnLeft(.85, 6)
-        wait(.2,SECONDS)
-        MoveForward(1, 6)
-        wait(.2,SECONDS)
-        ConveyorSpin(.7,12,REVERSE)
-        ShootDisk(7,9.5)
-
-        TurnRight(.9, 6)
-        wait(.2,SECONDS)
+        # Go into low goa to avoid other disks
+        TurnRight(.2,6)
         MoveForward(.5,6)
 
-        # Change to backward
-        # MoveBack(4, 6, True)
-        # wait(.2,SECONDS)
+        # Turn inside the low goal towards the other roller (Turned so we move backwards)
+        TurnRight(.5,6)
+        MoveBack(2,6)
 
-        # # Turn and shoots disks at the high goal
-        # MoveForward(2, 6)
-        # wait(.2,SECONDS)
-        # TurnRight(1.2, 6)
-        # wait(.2,SECONDS)
-        # MoveBack(.4, 6)
+        # Get the low goal
+        TurnRight(.5,6)
+        SkillsOpticalChecker()
 
-        # # Start of second side (Third Roller)
-        # SkillsOpticalChecker()
-        # MoveForward(.3, 6)
-        # wait(.2,SECONDS)
-        # TurnLeft(.4, 6)
-        # wait(.2,SECONDS)
-        # MoveForward(1.1, 6, True)
-        # wait(.2,SECONDS)
-        # TurnRight(1.2, 6)
-        # wait(.2,SECONDS)
-        # MoveBack(.4, 6)
+        # Now we get the disk, and then turn back around to get the other roller
+        MoveBack(.3,6)
+        TurnRight(.3,6)
+        MoveForward(.5,6)
+        ConveyorSpin(2,12)
 
-        # # Fourth Roller
-        # SkillsOpticalChecker()
-        # MoveForward(.3, 6)
-        # wait(.2,SECONDS)
-        # TurnLeft(.4, 6)
-        # wait(.2,SECONDS)
-        # MoveForward(2, 6, True)
+        # Get roller
+        TurnLeft(.7)
+        MoveBack(.3,6)
+        SkillsOpticalChecker()
 
-        # # Turns and shoots at high goal again
-        # TurnLeft(.5, 6)
-        # wait(.2,SECONDS)
-        # ShootDisk(3)
-        # wait(.2,SECONDS)
+        # At this point we restart the code to do the same thing on the opposite side, well keep the comments
 
-        # Since we are already turned towards teh high goal, we can see how the strings shoot when we are pointed at it
-        String()
+        # Get the roller and turn right towards the high goa closest to us
+        SkillsOpticalChecker()
+        MoveForward(.3, 6)
+
+        # 90 degree turn to the right towards the high goal
+        TurnRight(.5,6)
+
+        MoveForward(1,6)
+        TurnLeft(.2,6)
+
+        # Shoot disks into high goal
+        ShootDisk(5,12)
+
+        # Go into low goa to avoid other disks
+        TurnRight(.2,6)
+        MoveForward(.5,6)
+
+        # Turn inside the low goal towards the other roller (Turned so we move backwards)
+        TurnRight(.5,6)
+        MoveBack(2,6)
+
+        # Get the low goal
+        TurnRight(.5,6)
+        SkillsOpticalChecker()
+
+        # Now because we already have the other roller well actiate strings since its the end
+        Strings()
 
     #Start of Functions for Autonomous
     def MoveForward(timeF, WheelSpeed = 12, inp = False):
@@ -493,7 +277,158 @@ def autonomous():
 
     wait(.3,SECONDS)
 
-    skills()
+    CarsonSkills()
+
+
+def pre_autonomous():
+
+    # Motor things
+    Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
+    Left = MotorGroup(FrontLeft, BackLeft)
+    Right = MotorGroup(FrontRight, BackRight)
+    Conveyor = MotorGroup(ConveyorMotor, StringMotor)
+
+    #Print port setings so that team can seamlessly know where each motor is connected
+    brain.screen.print("Front Left Wheel: 1 Back: 3")
+    brain.screen.next_row()
+    brain.screen.print("Front Right Wheel: 2 Back: 4")
+    brain.screen.next_row()
+    brain.screen.print("Conveyor System: 5")
+    brain.screen.next_row()
+    brain.screen.print("Left Flywheel: 6")
+    brain.screen.next_row()
+    brain.screen.print("Right Flywheel: 7")
+    brain.screen.next_row()
+    brain.screen.print("Optical: 11")
+    brain.screen.next_row()
+    brain.screen.print("The string launchers: A")
+    brain.screen.next_row()
+    brain.screen.print("The string motors: 15")
+
+    #Set velocities
+    Left.set_velocity(85,PERCENT)
+    Right.set_velocity(85,PERCENT)
+    Flywheel.set_velocity(100,PERCENT)
+    Conveyor.set_velocity(100,PERCENT)
+    StringMotor.set_velocity(100,PERCENT)
+    Conveyor.set_max_torque(100,PERCENT)
+
+    #Variables
+    FlywheelSpeed = 12.0
+    intakeIn = False
+    intakeOut = False
+
+    #Setting motors to their respective stopping positions
+    Left.set_stopping(BRAKE)
+    Right.set_stopping(BRAKE)
+    Flywheel.set_stopping(BRAKE)
+    Conveyor.set_stopping(BRAKE)
+    StringMotor.set_stopping(BRAKE)
+
+    #Function for controller printing
+    def printing(num):
+        controller_1.screen.clear_screen()
+        controller_1.screen.set_cursor(1,1)
+        controller_1.screen.print("Flywheel speed: ")
+        controller_1.screen.set_cursor(1,16)
+        controller_1.screen.print(num)
+
+    #Functions For Controller Inputs:
+    #Robot Movement (Axis 2 and 3)
+    def Axis3Changed():
+        Left.spin(FORWARD, controller_1.axis3.position(), VOLT)
+
+    def Axis2Changed():
+        Right.spin(FORWARD, controller_1.axis2.position(), VOLT)
+
+    #Conveyor (Button B)
+    def ButtonBPressed():
+        Conveyor.spin(FORWARD)
+    def ButtonBReleased():
+        Conveyor.stop()
+    #Flywheel (Button A)
+    def ButtonAPressed():
+        Flywheel.spin(FORWARD, FlywheelSpeed, VOLT)
+
+    def ButtonAReleased():
+        Flywheel.stop()
+
+    #Changing the Speed of the Flywheel (L2 and R2) and making the flwheel go as well
+    def LeftB2():
+        global FlywheelSpeed
+        if FlywheelSpeed < 12.0:
+            FlywheelSpeed += 1.0
+        Flywheel.spin(FORWARD, FlywheelSpeed, VOLT)
+        printing(FlywheelSpeed)
+
+    def LeftB2R():
+        Flywheel.stop()
+
+    def RightB2():
+        global FlywheelSpeed
+        if FlywheelSpeed > 0:
+            FlywheelSpeed -= 1.0
+        Flywheel.spin(FORWARD, FlywheelSpeed, VOLT)
+        printing(FlywheelSpeed)
+
+    def RightB2R():
+        Flywheel.stop()
+
+    #Endgame string launching
+    def LeftB1P():
+        Conveyor.spin(REVERSE)
+
+    def LeftB1R():
+        # if intakeOut == False:
+        #     intakeOut = True
+        # elif intakeOut == True:
+        #     intakeOut = False
+        Conveyor.stop()
+
+    def RightB1P():    
+        Conveyor.spin(FORWARD)
+
+    def RightB1R():
+        # if intakeIn == False:
+        #     intakeIn = True
+        # elif intakeIn == True:
+        #     intakeIn = False
+        Conveyor.stop()
+
+    def ButtonDownPressed():
+        StringMotor.spin(REVERSE)
+
+    def ButtonDownReleased():
+        StringMotor.stop()
+
+    def ButtonUpPressed():
+        StringMotor.spin(FORWARD)
+
+    def ButtonUpReleased():
+        StringMotor.stop()
+    # system event handlers
+    controller_1.axis3.changed(Axis3Changed)
+    controller_1.axis2.changed(Axis2Changed)
+    controller_1.buttonB.pressed(ButtonBPressed)
+    controller_1.buttonA.pressed(ButtonAPressed)
+    controller_1.buttonB.released(ButtonBReleased)
+    controller_1.buttonA.released(ButtonAReleased)
+    controller_1.buttonL2.pressed(LeftB2)
+    controller_1.buttonR2.pressed(RightB2)
+    controller_1.buttonL2.released(LeftB2R)
+    controller_1.buttonR2.released(RightB2R)
+    controller_1.buttonL1.pressed(LeftB1P)
+    controller_1.buttonL1.released(LeftB1R)
+    controller_1.buttonR1.pressed(RightB1P)
+    controller_1.buttonR1.released(RightB1R)
+    controller_1.buttonDown.pressed(ButtonDownPressed)
+    controller_1.buttonDown.released(ButtonDownReleased)
+    controller_1.buttonUp.pressed(ButtonUpPressed)
+    controller_1.buttonUp.released(ButtonUpReleased)
+    controller_1.buttonX.released(autonomous)
+
+    # add 15ms delay to make sure events are registered correctly.
+    wait(15, MSEC)
 
 def user_control():
     pass
@@ -501,3 +436,4 @@ def user_control():
 #create competition instance
 comp = Competition(user_control, autonomous)
 pre_autonomous()
+
