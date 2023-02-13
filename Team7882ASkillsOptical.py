@@ -10,7 +10,7 @@ controller_1 = Controller(PRIMARY)
 FrontLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)
 FrontRight = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
 optical = Optical(Ports.PORT10)
-ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_36_1, True)
+ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_36_1, False)
 StringMotor = Motor(Ports.PORT15, GearSetting.RATIO_36_1, True)
 LeftFlywheel = Motor(Ports.PORT6, GearSetting.RATIO_18_1, False)
 RightFlywheel = Motor(Ports.PORT7, GearSetting.RATIO_18_1, True)
@@ -26,7 +26,7 @@ wait(30, MSEC)
 # ------------------------------------------
 # 
 # 	Project: Competition
-#	Authors: Steven Canton and Karter Crites
+#	Authors: Steven Canton
 #	Created: Sep 30, 2022
 # 
 # ------------------------------------------
@@ -244,79 +244,138 @@ def autonomous():
     Note that autonomous is only 15 seconds, so be mindfull of how much time you spend using the functions
     '''
 
-    def skills(): # Not Tested lol
+    def skills2(): # A code that shoots the disks at the middle line
 
-        # First Side
+        # First Roller
         SkillsOpticalChecker()
         MoveForward(.2, 6)
         wait(.2, SECONDS)
         TurnLeft(.4, 6)
         wait(.2,SECONDS)
-        MoveForward(.85, 6, True)
-        ConveyorSpin(2)
+        MoveForward(.8, 6, True)
+
+        # This is where the changes start, we are going to shoot our proeloads before we get to the second roller
+        TurnRight(.4, 6)
+        ConveyorSpin(1, 12, REVERSE)
         wait(.2,SECONDS)
-        TurnRight(1.8, 6)
+        ShootDisk(5,12)
+        wait(.2,SECONDS)
+        TurnRight(1.1, 6)
         wait(.2,SECONDS)
         MoveBack(.55, 6)
         wait(.2, SECONDS)
+
+        # Second Roller
         SkillsOpticalChecker()
         MoveForward(.3, 6)
         wait(.2,SECONDS)
+        # Because we already shotthi can be less of a tur and we can go to the other roller immediately
+        TurnLeft(.4, 6)
+        wait(.2,SECONDS)
+        MoveForward(3, 6,True)
+        wait(.2,SECONDS)
+        #Turn away from roller
+        TurnRight(1.3,6)
+        MoveBack(.3,6)
+
+        # Third Roller (Same as the first)
+        SkillsOpticalChecker()
+        MoveForward(.2, 6)
+        wait(.2, SECONDS)
+        TurnLeft(.4, 6)
+        wait(.2,SECONDS)
+        MoveForward(1.1, 6, True)
         TurnRight(.4, 6)
+        ConveyorSpin(1, 12, REVERSE)
+        wait(.2,SECONDS)
+        ShootDisk(5,12)
+        wait(.2,SECONDS)
+        TurnRight(1.1, 6)
+        wait(.2,SECONDS)
+        MoveBack(.55, 6)
+        wait(.2, SECONDS)
+
+        # Fourth Roller
+        SkillsOpticalChecker()
+        MoveForward(.3,12)
+        wait(.2,SECONDS)
+        TurnLeft(1.5,6)
+
+        # This shoots out our endgame and should end our autonomous code
+        String()
+
+    def skills(): # A little Tested
+
+        # First Roller
+        MoveBack(.2,6)
+        SkillsOpticalChecker()
+        MoveForward(.2, 6)
+        wait(.2, SECONDS)
+        TurnLeft(.4, 6)
+        wait(.2,SECONDS)
+        MoveForward(.7, 6, True)
+        wait(.2,SECONDS)
+        ConveyorSpin(.5, 12, FORWARD)
+        wait(.2,SECONDS)
+        TurnRight(1, 6)
+        wait(.2,SECONDS)
+        MoveBack(.9, 6)
+        wait(.2, SECONDS)
+
+        # Second Roller
+        SkillsOpticalChecker()
+        MoveForward(.3, 6)
+        wait(.2,SECONDS)
+        TurnLeft(.85, 6)
         wait(.2,SECONDS)
         MoveForward(1, 6)
         wait(.2,SECONDS)
-        TurnRight(.1,6)
-        ShootDisk(3)
-        # TurnRight(.5, 6)
-        # wait(.2,SECONDS)
-        # MoveForward(.5, 6, True)
-        # wait(2,SECONDS)
-        # TurnLeft(.3, 6)
-        # wait(.2,SECONDS)
-        # MoveForward(1, 6, True)
-        # wait(.2,SECONDS)
-        # TurnLeft(.5, 6)
-        # ShootDisk(3)
-        # TurnRight(.5, 6)
-        # wait(.2,SECONDS)
-        # MoveForward(1, 6)
-        # wait(.2,SECONDS)
-        # TurnRight(.9, 6)
-        # wait(.2,SECONDS)
-        # MoveBack(.3, 6)
+        ConveyorSpin(.7,12,REVERSE)
+        ShootDisk(7,9.5)
 
-        # # Start of secnd side
-        # SkillsOpticalChecker()
-        # MoveForward(.3, 6)
+        TurnRight(.9, 6)
+        wait(.2,SECONDS)
+        MoveForward(.5,6)
+
+        # Change to backward
+        # MoveBack(4, 6, True)
         # wait(.2,SECONDS)
-        # TurnLeft(.4, 6)
+
+        # # Turn and shoots disks at the high goal
+        # MoveForward(2, 6)
         # wait(.2,SECONDS)
-        # MoveForward(.3, 6, True)
-        # wait(.2,SECONDS)
-        # TurnRight(.9, 6)
+        # TurnRight(1.2, 6)
         # wait(.2,SECONDS)
         # MoveBack(.4, 6)
+
+        # # Start of second side (Third Roller)
         # SkillsOpticalChecker()
         # MoveForward(.3, 6)
         # wait(.2,SECONDS)
-        # TurnLeft(1, 6)
+        # TurnLeft(.4, 6)
         # wait(.2,SECONDS)
-        # MoveForward(1, 6, True)
+        # MoveForward(1.1, 6, True)
+        # wait(.2,SECONDS)
+        # TurnRight(1.2, 6)
+        # wait(.2,SECONDS)
+        # MoveBack(.4, 6)
+
+        # # Fourth Roller
+        # SkillsOpticalChecker()
+        # MoveForward(.3, 6)
+        # wait(.2,SECONDS)
+        # TurnLeft(.4, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(2, 6, True)
+
+        # # Turns and shoots at high goal again
         # TurnLeft(.5, 6)
         # wait(.2,SECONDS)
         # ShootDisk(3)
-        # TurnRight(.5, 6)
         # wait(.2,SECONDS)
-        # MoveForward(.5, 6, True)
-        # wait(.2,SECONDS)
-        # TurnRight(.6, 6)
-        # ShootDisk(1)
-        # TurnLeft(.4, 6)
-        # wait(.2,SECONDS)
-        # string.set(True)
-        # wait(.2, SECONDS)
-        # string.set(False)
+
+        # Since we are already turned towards teh high goal, we can see how the strings shoot when we are pointed at it
+        String()
 
     #Start of Functions for Autonomous
     def MoveForward(timeF, WheelSpeed = 12, inp = False):
@@ -324,7 +383,7 @@ def autonomous():
         Right.spin(FORWARD, WheelSpeed, VOLT)
 
         if inp == True:
-            Conveyor.spin(FORWARD, WheelSpeed, VOLT)
+            Conveyor.spin(FORWARD, 12, VOLT)
     
         wait(timeF, SECONDS)
 
@@ -367,33 +426,11 @@ def autonomous():
         Flywheel.stop()
 
     def ShootDisk(timeD, AllSpeed = 12):
-        Conveyor.spin(FORWARD, AllSpeed, VOLT)
+        Conveyor.spin(FORWARD, 12, VOLT)
         Flywheel.spin(FORWARD, AllSpeed, VOLT)
         wait(timeD, SECONDS)
         Conveyor.stop()
         Flywheel.stop()
-
-    def OpticalChecker():
-        optical.set_light(LedStateType.ON)
-        optical.set_light_power(25, PERCENT)
-
-        notwanted = Color.BLUE 
-        wanted = Color.RED
-
-        Left.spin(REVERSE,6,VOLT)
-        Right.spin(REVERSE,6,VOLT)
-
-        done = False
-        while done == False:
-            if optical.color() == notwanted:
-                Conveyor.spin(FORWARD)
-            elif optical.color() == wanted:
-                wait(.5,SECONDS)
-                Conveyor.stop()
-                Left.stop()
-                Right.stop()
-                done = True
-                optical.set_light(LedStateType.OFF)
 
     def SkillsOpticalChecker():
         optical.set_light(LedStateType.ON)
@@ -402,20 +439,36 @@ def autonomous():
         notwanted = Color.BLUE
         wanted = Color.RED
 
+        Conveyor.spin(FORWARD, 8, VOLT)
+        wait(.3,SECONDS)
+        Conveyor.stop()
+
         done = False
-        while done == False:
-            Left.spin(REVERSE, 6, VOLT)
-            Right.spin(REVERSE, 6, VOLT)
+
+        Left.spin(REVERSE, 4, VOLT)
+        Right.spin(REVERSE, 4, VOLT)
+        wait(.2,SECONDS)
+        Left.stop()
+        Right.stop()
+
+        tim = 0
+
+        while done == False or tim < 100:
+            Conveyor.spin(REVERSE, 10, VOLT)
+
+            tim += 1
+
             if optical.color() == notwanted:
-                Conveyor.spin(REVERSE)
+                pass
             
             elif optical.color() == wanted:
-                wait(.2, SECONDS)
+                wait(.18, SECONDS)
                 Conveyor.stop()
                 done = True
                 optical.set_light(LedStateType.OFF)
                 Left.stop()
                 Right.stop()
+                controller_1.screen.print("Red found")
 
     def String():
         string.set(True)
@@ -448,4 +501,3 @@ def user_control():
 #create competition instance
 comp = Competition(user_control, autonomous)
 pre_autonomous()
-
