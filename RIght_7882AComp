@@ -1,3 +1,27 @@
+#region VEXcode Generated Robot Configuration
+from vex import *
+import urandom
+
+# Brain should be defined by default
+brain=Brain()
+
+# Robot configuration code
+controller_1 = Controller(PRIMARY)
+FrontLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)
+FrontRight = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
+optical = Optical(Ports.PORT10)
+ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_36_1, False)
+StringMotor = Motor(Ports.PORT15, GearSetting.RATIO_36_1, True)
+LeftFlywheel = Motor(Ports.PORT6, GearSetting.RATIO_18_1, False)
+RightFlywheel = Motor(Ports.PORT7, GearSetting.RATIO_18_1, True)
+string = DigitalOut(brain.three_wire_port.a)
+BackLeft = Motor(Ports.PORT3, GearSetting.RATIO_18_1, True)
+BackRight = Motor(Ports.PORT8, GearSetting.RATIO_18_1, False)
+
+
+# wait for rotation sensor to fully initialize
+wait(30, MSEC)
+#endregion VEXcode Generated Robot Configuration
 
 # ------------------------------------------
 # 
