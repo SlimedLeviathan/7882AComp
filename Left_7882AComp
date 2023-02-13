@@ -10,8 +10,8 @@ controller_1 = Controller(PRIMARY)
 FrontLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)
 FrontRight = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
 optical = Optical(Ports.PORT10)
-ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_36_1, True)
-StringMotor = Motor(Ports.PORT15, GearSetting.RATIO_36_1, False)
+ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_36_1, False)
+StringMotor = Motor(Ports.PORT15, GearSetting.RATIO_36_1, True)
 LeftFlywheel = Motor(Ports.PORT6, GearSetting.RATIO_18_1, False)
 RightFlywheel = Motor(Ports.PORT7, GearSetting.RATIO_18_1, True)
 string = DigitalOut(brain.three_wire_port.a)
@@ -25,8 +25,8 @@ wait(30, MSEC)
 
 # ------------------------------------------
 # 
-# 	Project: Competition
-#	Authors: Steven Canton and Karter Crites (Bettered by Katherine Andrews :) )
+# 	Project: Competition Left Side
+#	Authors: Steven Canton
 #	Created: Sep 30, 2022
 # 
 # ------------------------------------------
@@ -40,7 +40,7 @@ wait(30, MSEC)
 # Port 5 ConveyorMotor, Red, Reverse
 # Port 6 LeftFlywheel, Green, Normal
 # Port 7 RightFlywheel, Green, Reverse
-# Port 15 StringMotor, Red, Forward
+# Port 15 StringMotor, Red, Reverse
 # Port 10 optical
 
 # Port A string
@@ -107,7 +107,7 @@ def pre_autonomous():
 
     #Conveyor (Button B)
     def ButtonBPressed():
-        Conveyor.spin(REVERSE)
+        Conveyor.spin(FORWARD)
     def ButtonBReleased():
         Conveyor.stop()
     #Flywheel (Button A)
@@ -155,21 +155,18 @@ def pre_autonomous():
         #     intakeIn = False
         Conveyor.stop()
 
-    def ButtonDownPressed():
-        StringMotor.spin(REVERSE)
-
-    def ButtonDownReleased():
-        StringMotor.stop()
+    def ButtonXPressed():
+        if controller_1.buttonUp.pressing():
+            string.set(True)
+            wait(.2,SECONDS)
+            string.set(False)
 
     def ButtonUpPressed():
         # StringMotor.spin(FORWARD)
-        string.set(True)
-        wait(.2,SECONDS)
-        string.set(False)
-
-    def ButtonUpReleased():
-        pass
-    #     StringMotor.stop()
+        if controller_1.buttonX.pressing():
+            string.set(True)
+            wait(.2,SECONDS)
+            string.set(False)
         
     # system event handlers
     controller_1.axis3.changed(Axis3Changed)
@@ -186,10 +183,8 @@ def pre_autonomous():
     controller_1.buttonL1.released(LeftB1R)
     controller_1.buttonR1.pressed(RightB1P)
     controller_1.buttonR1.released(RightB1R)
-    controller_1.buttonDown.pressed(ButtonDownPressed)
-    controller_1.buttonDown.released(ButtonDownReleased)
+    controller_1.buttonX.pressed(ButtonXPressed)
     controller_1.buttonUp.pressed(ButtonUpPressed)
-    controller_1.buttonUp.released(ButtonUpReleased)
     # controller_1.button
     # controller_1.buttonX.released(autonomous)
 
@@ -263,57 +258,20 @@ def autonomous():
     # Mostly Finished!
     
     def FromRoller():
-        RightFlywheel.spin(FORWARD)
-        LeftFlywheel.spin(FORWARD)
+        Flywheel.spin(FORWARD)
         #270 degree rotation
         MoveBack(.39, 12)
         wait(.3,SECONDS)
         OpticalChecker()
-        # Rolling Motor
-        MoveForward(.3, 7)
-        wait(.3,SECONDS)
-        # Move Back Slightly
-        TurnRight(.9,6)
-        wait(.3,SECONDS)
-        # Turn towards the stack of 3 rings
-        MoveForward(1.5, 6)
-        wait(.3,SECONDS)
-        TurnLeft(.6,7)
-        # To high goal
-        wait(.3,SECONDS)
-        MoveForward(.3,6)
-        ShootDisk(4)
-        # # Shoot
-        # wait(.3,SECONDS)
-        # RightFlywheel.spin(FORWARD)
-        # LeftFlywheel.spin(FORWARD)
-        # TurnRight(.85,7)
-        # wait(.3, SECONDS)
-        # # Back to stack of 3 disks
-        # MoveForward(.6, 6, True)
-        # wait(.3,SECONDS)
-        # # Collect the 2 rings
-        # MoveForward(.3,10, True)
-        # ConveyorSpin(1)
-        # ConveyorSpin(.5, 12, REVERSE)
-        # MoveForward(.3,10, True)
-        # ConveyorSpin(1)
-        # # Turn Towards Goal
-        # Left.spin_for(REVERSE, 365, DEGREES, wait=False)
-        # Right.spin_for(FORWARD, 365, DEGREES)
-        # # 135 degree rotation 
-        # wait(.3,SECONDS)
-        # ShootDisk(3)
-
-    def skills():
-        # OpticalChecker()
-        MoveForward(1,6)
-        TurnRight(.5,6)
-        ShootDisk(3)
-        TurnLeft(.3,6)
-        string.set(True)
         wait(.2,SECONDS)
-        string.set(False)
+        # Rolling Motor
+        MoveForward(.35, 7)
+        wait(.3,SECONDS)
+        TurnLeft(.22,5)
+        wait(.3,SECONDS)
+        wait(1.5,SECONDS)
+        ShootDisk(1.5, 12)
+        ShootDisk(2,12)
 
     #Start of Functions for Autonomous
     def MoveForward(timeF, WheelSpeed = 12, inp = False):
@@ -328,9 +286,8 @@ def autonomous():
         if inp == True:
             Conveyor.stop()
 
-        Left.stop()
+        Left.stop
         Right.stop()
-
 
     def MoveBack(timeB, WheelSpeed = 12):
         Left.spin(REVERSE, WheelSpeed , VOLT)
@@ -405,6 +362,13 @@ def autonomous():
                 Left.stop()
                 Right.stop()
 
+        if optical.color() == startColor:
+            Conveyor.spin(FORWARD)
+            wait(.2, SECONDS)
+            Conveyor.stop()
+
+        optical.set_light(LedStateType.OFF)
+
     def String():
         StringMotor.spin(FORWARD)
         wait(.5,SECONDS)
@@ -447,3 +411,4 @@ def user_control():
 #create competition instance
 comp = Competition(user_control, autonomous)
 pre_autonomous()
+
