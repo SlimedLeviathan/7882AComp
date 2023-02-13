@@ -1,32 +1,8 @@
-#region VEXcode Generated Robot Configuration
-from vex import *
-import urandom
-
-# Brain should be defined by default
-brain=Brain()
-
-# Robot configuration code
-controller_1 = Controller(PRIMARY)
-FrontLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)
-FrontRight = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
-optical = Optical(Ports.PORT10)
-ConveyorMotor = Motor(Ports.PORT5, GearSetting.RATIO_36_1, True)
-StringMotor = Motor(Ports.PORT15, GearSetting.RATIO_36_1, False)
-LeftFlywheel = Motor(Ports.PORT6, GearSetting.RATIO_18_1, False)
-RightFlywheel = Motor(Ports.PORT7, GearSetting.RATIO_18_1, True)
-string = DigitalOut(brain.three_wire_port.a)
-BackLeft = Motor(Ports.PORT3, GearSetting.RATIO_18_1, True)
-BackRight = Motor(Ports.PORT8, GearSetting.RATIO_18_1, False)
-
-
-# wait for rotation sensor to fully initialize
-wait(30, MSEC)
-#endregion VEXcode Generated Robot Configuration
 
 # ------------------------------------------
 # 
 # 	Project: Competition
-#	Authors: Steven Canton and Karter Crites (Bettered by Katherine Andrews :) )
+#	Authors: Steven Canton
 #	Created: Sep 30, 2022
 # 
 # ------------------------------------------
@@ -40,8 +16,10 @@ wait(30, MSEC)
 # Port 5 ConveyorMotor, Red, Reverse
 # Port 6 LeftFlywheel, Green, Normal
 # Port 7 RightFlywheel, Green, Reverse
-# Port 15 StringMotor, Red, Forward
+# Port 15 StringMotor, Red, Reverse
 # Port 10 optical
+
+# Port A string
 
 #Motor things
 Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
@@ -105,7 +83,7 @@ def pre_autonomous():
 
     #Conveyor (Button B)
     def ButtonBPressed():
-        Conveyor.spin(REVERSE)
+        Conveyor.spin(FORWARD)
     def ButtonBReleased():
         Conveyor.stop()
     #Flywheel (Button A)
@@ -153,21 +131,18 @@ def pre_autonomous():
         #     intakeIn = False
         Conveyor.stop()
 
-    def ButtonDownPressed():
-        StringMotor.spin(REVERSE)
-
-    def ButtonDownReleased():
-        StringMotor.stop()
+    def ButtonXPressed():
+        if controller_1.buttonUp.pressing():
+            string.set(True)
+            wait(.2,SECONDS)
+            string.set(False)
 
     def ButtonUpPressed():
         # StringMotor.spin(FORWARD)
-        string.set(True)
-        wait(.2,SECONDS)
-        string.set(False)
-
-    def ButtonUpReleased():
-        pass
-    #     StringMotor.stop()
+        if controller_1.buttonX.pressing():
+            string.set(True)
+            wait(.2,SECONDS)
+            string.set(False)
         
     # system event handlers
     controller_1.axis3.changed(Axis3Changed)
@@ -184,10 +159,8 @@ def pre_autonomous():
     controller_1.buttonL1.released(LeftB1R)
     controller_1.buttonR1.pressed(RightB1P)
     controller_1.buttonR1.released(RightB1R)
-    controller_1.buttonDown.pressed(ButtonDownPressed)
-    controller_1.buttonDown.released(ButtonDownReleased)
+    controller_1.buttonX.pressed(ButtonXPressed)
     controller_1.buttonUp.pressed(ButtonUpPressed)
-    controller_1.buttonUp.released(ButtonUpReleased)
     # controller_1.button
     # controller_1.buttonX.released(autonomous)
 
@@ -198,13 +171,15 @@ def autonomous():
     # Left.spin(FORWARD)
     # Right.spin(FORWARD)
     # wait(2)
-    # Left.stop()
-    # Right.stop()
+    # left.stop
+    # right.stop
 
     # Left.spin(FORWARD)
     # Conveyor.spin(REVERSE)
     # wait(.5, SECONDS)
     # Conveyor.stop()
+
+    
 
     '''
 
@@ -254,29 +229,45 @@ def autonomous():
 
     Note that autonomous is only 15 seconds, so be mindfull of how much time you spend using the functions
     '''
-
+    
     def RightSide():
-        MoveForward(1.5, 6, True)
+        MoveForward(1.6, 6, True)
         wait(.3,SECONDS)
-        TurnRight(.6,6)
+        ConveyorSpin(1, 12, REVERSE)
+        wait(.3,SECONDS)
+        TurnRight(.28,6)
         wait(.3,SECONDS)
         ShootDisk(3)
-        TurnRight(.6,6)
+        TurnLeft(.55,6)
         wait(.3,SECONDS)
-        MoveForward(2,8,True)
+        MoveBack(1.5,6)
         wait(.3,SECONDS)
-        TurnLeft(.6,6)
+        TurnRight(.4,6)
         wait(.3,SECONDS)
         MoveBack(.5, 6)
         OpticalChecker()
-    
+
+        # After Roller
+        # MoveForward(.3, 6)
+        # wait(.3, SECONDS)
+        # TurnLeft(.4, 6)
+        # wait(.3,SECONDS)
+        # MoveForward(2, 8, True)
+        # wait(.3,SECONDS)
+        # TurnRight(.6, 6)
+        # ShootDisk(3)
+
+    def Backup():
+        MoveBack(.3, 6)
+        MoveForward(.3, 6)
+
     #Start of Functions for Autonomous
     def MoveForward(timeF, WheelSpeed = 12, inp = False):
         Left.spin(FORWARD, WheelSpeed, VOLT)
         Right.spin(FORWARD, WheelSpeed, VOLT)
 
         if inp == True:
-            Conveyor.spin(FORWARD, WheelSpeed, VOLT)
+            Conveyor.spin(FORWARD, 12, VOLT)
     
         wait(timeF, SECONDS)
 
@@ -351,10 +342,10 @@ def autonomous():
 
         done = False
         while done == False:
-            if optical.color() == opColor:
+            if optical.color() == startColor:
                 Conveyor.spin(REVERSE, 12, VOLT)
-            elif optical.color() == startColor:
-                wait(.2, SECONDS)
+            elif optical.color() == opColor:
+                wait(.1, SECONDS)
                 done = True
                 Conveyor.stop()
                 Left.stop()
@@ -386,10 +377,6 @@ def autonomous():
     wait(.3,SECONDS)
 
     RightSide()
-
-    # MoveBack(.5, 6)
-    # wait(.2, SECONDS)
-    # MoveForward(.5, 6)
 
 def user_control():
     pass
