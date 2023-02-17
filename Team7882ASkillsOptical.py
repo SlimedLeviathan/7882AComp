@@ -33,6 +33,12 @@ wait(30, MSEC)
 
 # Begin project code
 
+# Motor things
+Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
+Left = MotorGroup(FrontLeft, BackLeft)
+Right = MotorGroup(FrontRight, BackRight)
+Conveyor = MotorGroup(ConveyorMotor, StringMotor)
+
 # Port 1 FrontLeft, Green, Reverse
 # Port 2 FrontRight, Green, Normal
 # Port 3 BackLeft, Green, Reverse
@@ -159,7 +165,80 @@ def autonomous():
         SkillsOpticalChecker()
 
         # Now because we already have the other roller well actiate strings since its the end
-        Strings()
+        String()
+
+    def skills(): # A little Tested
+
+        # First Roller
+        MoveBack(.2,6)
+        SkillsOpticalChecker()
+        MoveForward(.2, 6)
+        wait(.2, SECONDS)
+        TurnLeft(.4, 6)
+        wait(.2,SECONDS)
+        MoveForward(.7, 6, True)
+        wait(.2,SECONDS)
+        ConveyorSpin(.5, 12, FORWARD)
+        wait(.2,SECONDS)
+        TurnRight(1, 6)
+        wait(.2,SECONDS)
+        MoveBack(.9, 6)
+        wait(.2, SECONDS)
+
+        # Second Roller
+        SkillsOpticalChecker()
+        MoveForward(.3, 6)
+        wait(.2,SECONDS)
+        TurnLeft(.85, 6)
+        wait(.2,SECONDS)
+        MoveForward(1, 6)
+        wait(.2,SECONDS)
+        ConveyorSpin(.7,12,REVERSE)
+        ShootDisk(7,9.5)
+
+        TurnRight(.9, 6)
+        wait(.2,SECONDS)
+        MoveForward(.5,6)
+
+        # Change to backward
+        # MoveBack(4, 6, True)
+        # wait(.2,SECONDS)
+
+        # # Turn and shoots disks at the high goal
+        # MoveForward(2, 6)
+        # wait(.2,SECONDS)
+        # TurnRight(1.2, 6)
+        # wait(.2,SECONDS)
+        # MoveBack(.4, 6)
+
+        # # Start of second side (Third Roller)
+        # SkillsOpticalChecker()
+        # MoveForward(.3, 6)
+        # wait(.2,SECONDS)
+        # TurnLeft(.4, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(1.1, 6, True)
+        # wait(.2,SECONDS)
+        # TurnRight(1.2, 6)
+        # wait(.2,SECONDS)
+        # MoveBack(.4, 6)
+
+        # # Fourth Roller
+        # SkillsOpticalChecker()
+        # MoveForward(.3, 6)
+        # wait(.2,SECONDS)
+        # TurnLeft(.4, 6)
+        # wait(.2,SECONDS)
+        # MoveForward(2, 6, True)
+
+        # # Turns and shoots at high goal again
+        # TurnLeft(.5, 6)
+        # wait(.2,SECONDS)
+        # ShootDisk(3)
+        # wait(.2,SECONDS)
+
+        # Since we are already turned towards teh high goal, we can see how the strings shoot when we are pointed at it
+        String()
 
     #Start of Functions for Autonomous
     def MoveForward(timeF, WheelSpeed = 12, inp = False):
@@ -227,20 +306,14 @@ def autonomous():
         wait(.3,SECONDS)
         Conveyor.stop()
 
-        done = False
-
         Left.spin(REVERSE, 4, VOLT)
         Right.spin(REVERSE, 4, VOLT)
         wait(.2,SECONDS)
         Left.stop()
         Right.stop()
 
-        tim = 0
-
-        while done == False or tim < 100:
+        for _ in range(100):
             Conveyor.spin(REVERSE, 10, VOLT)
-
-            tim += 1
 
             if optical.color() == notwanted:
                 pass
@@ -248,11 +321,11 @@ def autonomous():
             elif optical.color() == wanted:
                 wait(.18, SECONDS)
                 Conveyor.stop()
-                done = True
                 optical.set_light(LedStateType.OFF)
                 Left.stop()
                 Right.stop()
                 controller_1.screen.print("Red found")
+                break
 
     def String():
         string.set(True)
@@ -277,16 +350,10 @@ def autonomous():
 
     wait(.3,SECONDS)
 
-    CarsonSkills()
+    skills()
 
 
 def pre_autonomous():
-
-    # Motor things
-    Flywheel = MotorGroup(LeftFlywheel, RightFlywheel)
-    Left = MotorGroup(FrontLeft, BackLeft)
-    Right = MotorGroup(FrontRight, BackRight)
-    Conveyor = MotorGroup(ConveyorMotor, StringMotor)
 
     #Print port setings so that team can seamlessly know where each motor is connected
     brain.screen.print("Front Left Wheel: 1 Back: 3")
